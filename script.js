@@ -258,6 +258,7 @@ class Game {
           this.player.points,
           players[this.player.name || "Unknown"] || 0
         );
+        store();
         alert(`Fim de jogo. Você obteve ${game.player.points} pontos.`);
         audio.pause();
         DOM_MAIN_GAME.setAttribute("hidden", "true");
@@ -286,12 +287,31 @@ function playError() {
   audio.play();
 }
 
+function store() {
+  console.log(players)
+  fetch('/scores', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(players)
+  });
+}
+
+function restore() {
+  return fetch('/scores').then(async response => {
+    players = await response.json() || players;
+  })
+}
+
 var game;
 var timers = [];
 var audio;
 var players = {};
+restore();
 
-function startGame() {
+async function startGame() {
   const inputs = [];
   const gens = [];
   for (let i = 0; i < 8; i++) {
