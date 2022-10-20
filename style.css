@@ -1,17 +1,27 @@
-html, body {
-  height: 100%;
-  width: 100%;
+@font-face {
+  font-family: 'MyWebFont';
+  src: url('public/04B_30__.TTF') format('truetype');
 }
 
-.main > h1 {
+* {
+  font-family: 'MyWebFont';
+}
+
+.main {
   text-align: center;
 }
 
-img {
+.title {
+  font-size: xx-large;
+  padding: 20px;
+  text-align: center;
+}
+
+#img {
   display: block;
   margin-left: auto;
   margin-right: auto;
-  width: 40%;
+  width: 20%;
   filter: brightness(0);
 }
 
@@ -39,7 +49,7 @@ img {
   text-align: center;
   text-decoration: none;
   outline: none;
-  color: #999;
+  color: #000;
   border: none;
   border-radius: 15px;
   box-shadow: 0 3px #999;
@@ -59,8 +69,37 @@ img {
              1px 1px #fff, -1px -1px #fff, 1px -1px #fff, -1px 1px #fff;
 }
 
+.points {
+  position: absolute;
+  top: 0px;
+  left: 45%;
+  font-size: x-large;
+  margin-right: 20px;
+}
+
+@media (max-width:700px){
+  .choices {
+    display: block;
+    margin-top: 50px;
+  }
+
+  .tip > button {
+    width: 30%;
+  }
+
+  .points {
+    left: 25%;
+  }
+
+  #img {
+    width: 40%;
+  }
+
+}
+
 .option {
   margin: 10px;
+  margin-left: -5px;
   width: 100%;
   display: inline-block;
   padding: 15px 25px;
@@ -81,15 +120,52 @@ img {
   transform: translateY(4px);
 }
 
-.points {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  font-size: x-large;
-  font-family: cursive;
-  margin-right: 20px;
+#genList {
+  display: flex;
+  justify-content: center;
+  margin-left: -50px;
+}
+
+#scoreboard > ul {
+  display: grid;
+  justify-content: center;
+}
+
+#scoreboard > ul > li {
+  background-color: #DDD;
+  margin: 10px;
+  margin-left: -30px;
+  padding: 20px;
+  justify-content: baseline;
+}
+
+li.score {
+  text-align: center;
 }
 
 #bonus {
   color: lightgreen;
+}
+
+.label {
+  margin: 0px -20px -30px -20px;
+  overflow: hidden;
+}
+
+.prevent-select {
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+}
+
+ul {
+  list-style-type: none;
+}
+
+#startGame {
+  width: 100%;
+}
+
+#scoreboard {
+  height: 100%;
 }

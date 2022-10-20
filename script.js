@@ -62,7 +62,8 @@ async function randomPokemons(generations, count = 4) {
         Math.floor(
           Math.random() * (interval.end - interval.start) + interval.start
         ) + 1;
-    } while (pokeDatas.includes(pokeId));
+    } while (pokeDatas.includes(pokeId) && game.previous.includes(pokeId));
+    game.previous.push(pokeId);
     pokeDatas.push(await getPokemonData(pokeId));
   }
   return pokeDatas;
@@ -79,6 +80,8 @@ function elt(type, prop, ...childrens) {
   return elem;
 }
 
+const DOM_START_SCREEN = document.querySelector("#startScreen");
+const DOM_MAIN_GAME = document.querySelector("#mainGame");
 const DOM_PROGRESS = elt("div", {
   className: "progress-bar",
 });
@@ -91,6 +94,8 @@ const DOM_OPTION2 = document.querySelector("#option2");
 const DOM_OPTION3 = document.querySelector("#option3");
 const DOM_OPTION4 = document.querySelector("#option4");
 const DOM_OPTIONS = [DOM_OPTION1, DOM_OPTION2, DOM_OPTION3, DOM_OPTION4];
+const DOM_TIP = document.querySelector("#startGame");
+const DOM_SCOREBOARD = document.querySelector("#scoreboard > ul");
 
 function syncProgress() {
   const timeProgress = 1 - game.round.timer.elapsedTime / TIME_PER_ROUND;
@@ -108,20 +113,27 @@ function syncProgress() {
 }
 
 function handleChoice(alternative) {
-  game.player.guess(alternative, game.round);
+  if (!game.round.started) return;
+  if (game.gameover) return;
+  if (game.player.guess(alternative, game.round)) {
+    playSuccess();
+  } else {
+    playError();
+  }
   game.round.endCallback();
-  game.nextRound(true);
+  game.nextRound();
 }
 
 function useTip() {
   game.round.tipUsed = true;
+  DOM_IMG.style.filter = "brightness(1)";
+  DOM_TIP.setAttribute("disabled", "true");
   for (let i = 0; i < 4; i++) {
     const poke = game.round.pokeDatas[i];
     if (poke.types.length > 1) {
       const colors = [TYPE_COLOURS[poke.types[0]], TYPE_COLOURS[poke.types[1]]];
       const gradient = `linear-gradient(135deg, ${colors[0]} 0%, ${colors[0]} 50%, ${colors[1]} 50%, ${colors[1]} 100%)`;
       DOM_OPTIONS[i].style.background = gradient;
-      console.log(gradient);
     } else {
       DOM_OPTIONS[i].style.background = TYPE_COLOURS[poke.types[0]];
     }
@@ -141,10 +153,11 @@ class Timer {
       this.elapsedTime = Math.floor(((now - startTime) % (1000 * 60)) / 1000);
       this.ticksCallback();
       if (this.elapsedTime >= this.duration) {
-        clearInterval(this.id);
+        clearTimers();
         this.endCallBack();
       }
     }, this.ticks);
+    timers.push(this.id);
   }
 }
 
@@ -156,27 +169,36 @@ class Round {
     this.endCallback = endCallback;
     this.timer = new Timer(
       this.startTime,
-      TIME_PER_ROUND,
+      Number.MAX_SAFE_INTEGER,
       TIMER_TICKS,
       () => conditionsCallback(this),
       () => {
         this.roundTimeout = true;
-        endCallback();
+        clearTimers();
+        playError();
+        this.endCallback();
       }
     );
     this.pokeDatas = null;
     this.answer = null;
+    this.answed = false;
     this.tipUsed = false;
+    this.started = false;
   }
 
-  async newPokemons() {
-    this.pokeDatas = await randomPokemons([0, 7], 4);
+  async startRound() {
+    this.pokeDatas = await randomPokemons(game.gens, 4);
     this.answer = Math.floor(Math.random() * 4);
     for (let i = 0; i < 4; i++) {
       DOM_OPTIONS[i].innerText = this.pokeDatas[i].name;
       DOM_OPTIONS[i].style.background = "";
     }
     DOM_IMG.setAttribute("src", this.pokeDatas[this.answer].img);
+    DOM_IMG.style.filter = "brightness(0)";
+    DOM_TIP.removeAttribute("disabled");
+    this.timer.startTime = new Date().getTime();
+    this.timer.duration = TIME_PER_ROUND;
+    this.started = true;
   }
 }
 
@@ -188,6 +210,7 @@ class Player {
   }
 
   guess(alternative, round) {
+    round.answed = true;
     if (alternative === round.answer) {
       const points =
         POINTS_PER_ROUND -
@@ -203,30 +226,115 @@ class Player {
 }
 
 class Game {
-  constructor() {
+  constructor(playerName, gens) {
     this.roundCount = 0;
-    this.player = new Player("p1");
+    this.player = new Player(playerName);
     this.round = null;
-    this.nextRound = async function (skip) {
-      if (game.roundCount < ROUNDS) {
-        console.log(this.roundCount);
+    this.previous = [];
+    this.gens = gens;
+    this.gameover = false;
+    this.nextRound = async function () {
+      const semaphore = this.round
+        ? this.round.answed || this.round.roundTimeout
+        : true;
+      if (game.roundCount < ROUNDS && semaphore) {
         const round = new Round(
           () => {
             syncProgress();
           },
-          () => {
+          (skipRound) => {
             game.roundCount++;
-            clearInterval(round.timer.id);
-            if (!skip) nextRound(false);
+            clearTimers();
+            if (!skipRound) this.nextRound();
           }
         );
         game.round = round;
         syncProgress();
-        if (skip) await game.round.newPokemons();
+        await game.round.startRound();
+      }
+      if (game.roundCount == ROUNDS && !this.gameover) {
+        this.gameover = true;
+        players[this.player.name || "Unknown"] = Math.max(
+          this.player.points,
+          players[this.player.name || "Unknown"] || 0
+        );
+        alert(`Fim de jogo. Você obteve ${game.player.points} pontos.`);
+        audio.pause();
+        DOM_MAIN_GAME.setAttribute("hidden", "true");
+        DOM_START_SCREEN.removeAttribute("hidden");
+        return;
       }
     };
   }
 }
 
-var game = new Game();
-game.nextRound(true);
+function clearTimers() {
+  for (let i = 0; i < timers.length; i++) {
+    clearInterval(timers[i]);
+  }
+}
+
+function playSuccess() {
+  if (audio) audio.pause();
+  audio = new Audio("public/success.wav");
+  audio.play();
+}
+
+function playError() {
+  if (audio) audio.pause();
+  audio = new Audio("public/error.wav");
+  audio.play();
+}
+
+var game;
+var timers = [];
+var audio;
+var players = {};
+
+function startGame() {
+  const inputs = [];
+  const gens = [];
+  for (let i = 0; i < 8; i++) {
+    inputs.push(document.querySelector(`#gen${i + 1}`).checked);
+    if (inputs[i]) gens.push(i);
+  }
+  if (!inputs.reduce((s, a) => s + a, 0)) {
+    alert("Selecione pelo menos uma geração!");
+    return;
+  }
+  let playerName =
+    game && game.player.name
+      ? prompt("Digite o seu nome", game.player.name)
+      : prompt("Digite o seu nome");
+  game = new Game(playerName, gens);
+  DOM_START_SCREEN.setAttribute("hidden", "true");
+  game.nextRound();
+  DOM_BONUS.innerText = "";
+  DOM_MAIN_GAME.removeAttribute("hidden");
+}
+
+function sortDOMChildren(el) {
+  [...el.children]
+    .sort((a, b) => (a.innerText > b.innerText ? 1 : -1))
+    .forEach((node) => el.appendChild(node));
+}
+
+function scoreboard() {
+  const playersKeys = Object.keys(players);
+  for (let i = 0; i < playersKeys.length; i++) {
+    var ps = DOM_SCOREBOARD.querySelector(`#${playersKeys[i]}-score`);
+    if (!ps) {
+      ps = elt("li", { className: "score", id: `${playersKeys[i]}-score` });
+      DOM_SCOREBOARD.appendChild(ps);
+    }
+    ps.innerText = `${playersKeys[i]}: ${players[playersKeys[i]]}`;
+  }
+  sortDOMChildren(DOM_SCOREBOARD);
+  DOM_START_SCREEN.setAttribute("hidden", "true");
+  DOM_SCOREBOARD.parentNode.removeAttribute("hidden");
+}
+
+function backScoreboard() {
+  DOM_SCOREBOARD.parentNode.setAttribute("hidden", "true");
+  DOM_START_SCREEN.removeAttribute("hidden");
+}

@@ -1,38 +1,215 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>replit</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+  </head>
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width">
-  <title>replit</title>
-  <link href="style.css" rel="stylesheet" type="text/css" />
-</head>
-
-<body>
-  <div class="mainGame">
-    <h1>QUEM É ESSE POKEMON?</h1>
-    <div class="points">Points: <span id="points">0</span> <span id="bonus"></span></div>
-    <div class="progress"></div>
-    <img id="img" src="">
-    <div class="tip">
-      <button onclick="useTip()">Dica</button>
+  <body class="prevent-select">
+    <div id="startScreen">
+      <div class="title">ESCOLHA AS GENS QUE DESEJA INCLUIR:</div>
+      <div id="genList">
+        <ul>
+          <li>
+            <button id="scoreboard" class="option" onclick="scoreboard()">
+              Placar
+            </button>
+          </li>
+          <li>
+            <button id="startGame" class="option" onclick="startGame()">
+              Jogar
+            </button>
+          </li>
+          <li>
+            <input type="checkbox" id="gen1" name="gen1" value="Gen 1" />
+            <label for="gen1">
+              Gen 1
+              <img
+                class="label"
+                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png"
+              />
+              <img
+                class="label"
+                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png"
+              />
+              <img
+                class="label"
+                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png"
+              />
+            </label>
+          </li>
+          <li>
+            <input type="checkbox" id="gen2" name="gen2" value="Gen 2" />
+            <label for="gen2">
+              Gen 2
+              <img
+                class="label"
+                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/152.png"
+              />
+              <img
+                class="label"
+                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/155.png"
+              />
+              <img
+                class="label"
+                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/158.png"
+              />
+            </label>
+          </li>
+          <li>
+            <input type="checkbox" id="gen3" name="gen3" value="Gen 3" />
+            <label for="gen3">
+              Gen 3
+              <img
+                class="label"
+                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/252.png"
+              />
+              <img
+                class="label"
+                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/255.png"
+              />
+              <img
+                class="label"
+                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/258.png"
+              />
+            </label>
+          </li>
+          <li>
+            <input type="checkbox" id="gen4" name="gen4" value="Gen 4" />
+            <label for="gen4">
+              Gen 4
+              <img
+                class="label"
+                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/387.png"
+              />
+              <img
+                class="label"
+                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/390.png"
+              />
+              <img
+                class="label"
+                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/393.png"
+              />
+            </label>
+          </li>
+          <li>
+            <input type="checkbox" id="gen5" name="gen5" value="Gen 5" />
+            <label for="gen5">
+              Gen 5
+              <img
+                class="label"
+                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/495.png"
+              />
+              <img
+                class="label"
+                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/498.png"
+              />
+              <img
+                class="label"
+                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/501.png"
+              />
+            </label>
+          </li>
+          <li>
+            <input type="checkbox" id="gen6" name="gen6" value="Gen 6" />
+            <label for="gen6">
+              Gen 6
+              <img
+                class="label"
+                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/650.png"
+              />
+              <img
+                class="label"
+                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/653.png"
+              />
+              <img
+                class="label"
+                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/656.png"
+              />
+            </label>
+          </li>
+          <li>
+            <input type="checkbox" id="gen7" name="gen7" value="Gen 7" />
+            <label for="gen7">
+              Gen 7
+              <img
+                class="label"
+                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/722.png"
+              />
+              <img
+                class="label"
+                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/725.png"
+              />
+              <img
+                class="label"
+                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/728.png"
+              />
+            </label>
+          </li>
+          <li>
+            <input type="checkbox" id="gen8" name="gen8" value="Gen 8" />
+            <label for="gen8">
+              Gen 8
+              <img
+                class="label"
+                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/810.png"
+              />
+              <img
+                class="label"
+                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/813.png"
+              />
+              <img
+                class="label"
+                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/816.png"
+              />
+            </label>
+          </li>
+        </ul>
+      </div>
     </div>
-    <div class="choices">
-      <button class="option op1" id="option1" onclick="handleChoice(0)"></button>
-      <button class="option op2" id="option2" onclick="handleChoice(1)"></button>
+    <div id="mainGame" hidden>
+      <div class="title">QUEM E ESSE POKEMON?</div>
+      <div class="points">
+        Points: <span id="points">0</span> <span id="bonus"></span>
+      </div>
+      <div class="progress"></div>
+      <img id="img" src="" />
+      <div class="tip">
+        <button onclick="useTip()">Dica</button>
+      </div>
+      <div class="choices">
+        <button
+          class="option op1"
+          id="option1"
+          onclick="handleChoice(0)"
+        ></button>
+        <button
+          class="option op2"
+          id="option2"
+          onclick="handleChoice(1)"
+        ></button>
+      </div>
+      <div class="choices">
+        <button
+          class="option op3"
+          id="option3"
+          onclick="handleChoice(2)"
+        ></button>
+        <button
+          class="option op4"
+          id="option4"
+          onclick="handleChoice(3)"
+        ></button>
+      </div>
     </div>
-    <div class="choices">
-      <button class="option op3" id="option3" onclick="handleChoice(2)"></button>
-      <button class="option op4" id="option4" onclick="handleChoice(3)"></button>
+    <div id="scoreboard" hidden>
+      <button style="margin: 0" class="option" onclick="backScoreboard()">
+        Voltar
+      </button>
+      <ul></ul>
     </div>
-  </div>
-  <div class="win" hidden>
-    
-  </div>
-  <div class="lose" hidden>
-    
-  </div>
-  <script src="script.js"></script>
-</body>
-
+    <script src="script.js"></script>
+  </body>
 </html>
