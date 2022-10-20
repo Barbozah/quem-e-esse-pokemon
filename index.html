@@ -9,10 +9,11 @@
 </head>
 
 <body>
-  <div class="main">
+  <div class="mainGame">
     <h1>QUEM É ESSE POKEMON?</h1>
+    <div class="points">Points: <span id="points">0</span> <span id="bonus"></span></div>
     <div class="progress"></div>
-    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/732.png">
+    <img id="img" src="">
     <div class="tip">
       <button onclick="useTip()">Dica</button>
     </div>
@@ -25,14 +26,13 @@
       <button class="option op4" id="option4" onclick="handleChoice(3)"></button>
     </div>
   </div>
+  <div class="win" hidden>
+    
+  </div>
+  <div class="lose" hidden>
+    
+  </div>
   <script src="script.js"></script>
-
- <!--
-  This script places a badge on your repl's full-browser view back to your repl's cover
-  page. Try various colors for the theme: dark, light, red, orange, yellow, lime, green,
-  teal, blue, blurple, magenta, pink!
-  -->
-  <script src="https://replit.com/public/js/replit-badge.js" theme="blue" defer></script> 
 </body>
 
 </html>
